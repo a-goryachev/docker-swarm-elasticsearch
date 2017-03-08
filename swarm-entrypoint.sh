@@ -12,11 +12,13 @@ MY_IP=$(dig $(hostname) +short)
 
 OTHER_NODES=""
 
+echo "Discovering other nodes in cluster..."
 for NODE_IP in $SWARM_SERVICE_IPs
 do
     if [ "${NODE_IP}" == "${MY_IP}" ];then
         continue;
     fi
+    echo "${NODE_IP}"
     OTHER_NODES="${OTHER_NODES}${NODE_IP},"
 done
 
