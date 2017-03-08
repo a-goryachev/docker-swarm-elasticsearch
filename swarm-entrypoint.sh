@@ -1,15 +1,17 @@
 #!/bin/bash
 
-set -e
+#set -e
 
+echo "service name: ${SERVICE_NAME}"
 if [ -z ${SERVICE_NAME} ];then
-    >&2 echo "Environment variable SERVICE_NAME not set. You MUST set it to name of docker swarm service"
-    exit 1
+    #>&2 echo "Environment variable SERVICE_NAME not set. You MUST set it to name of docker swarm service"
+    #exit 1
 fi
 
 echo "Discovering other nodes in cluster..."
 # Docker swarm's DNS resolves special hostname "tasks.<service_name" to IP addresses of all containers inside overlay network
 SWARM_SERVICE_IPs=$(dig tasks.${SERVICE_NAME} +short)
+echo "dig exit code: $?"
 echo "nodes of service ${SERVICE_NAME}: $SWARM_SERVICE_IPs"
 MY_IP=$(dig $(hostname) +short)
 echo "My IP: ${MY_IP}"
