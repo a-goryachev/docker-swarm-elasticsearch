@@ -4,7 +4,7 @@
 
 echo "service name: ${SERVICE_NAME}"
 if [ -z ${SERVICE_NAME} ];then
-    #>&2 echo "Environment variable SERVICE_NAME not set. You MUST set it to name of docker swarm service"
+    echo "Environment variable SERVICE_NAME not set. You MUST set it to name of docker swarm service"
     #exit 1
 fi
 
@@ -37,4 +37,4 @@ if ! [ -z $OTHER_NODES ];then
     export "discovery.zen.ping.unicast.hosts="=${OTHER_NODES%,}
 fi
 
-$@
+exec "$@"
