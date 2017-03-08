@@ -1,6 +1,6 @@
 FROM docker.elastic.co/elasticsearch/elasticsearch:5.2.2
 
-RUN apt-get -y update; apt-get -y install dnsutils
+RUN apk update && apk add bind-tools
 
 COPY swarm-entrypoint.sh /
 
