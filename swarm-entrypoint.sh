@@ -25,10 +25,11 @@ do
     OTHER_NODES="${OTHER_NODES}${NODE_IP},"
 done
 
-echo "Exporting publishhost and host"
-export "network.publish_host=${SERVICE_NAME}"
-export "network.host=${MY_IP}"
-
+if ! [ -z ${MY_IP} ];then
+    echo "Exporting publishhost and host"
+    export "network.publish_host"=${SERVICE_NAME}
+    export "network.host"=${MY_IP}
+fi
 if ! [ -z $OTHER_NODES ];then
     echo "Exporting environment variables"
     export "discovery.zen.ping.unicast.hosts="=${OTHER_NODES%,}
