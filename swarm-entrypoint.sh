@@ -8,6 +8,7 @@ fi
 
 # Docker swarm's DNS resolves special hostname "tasks.<service_name" to IP addresses of all containers inside overlay network
 SWARM_SERVICE_IPs=$(dig tasks.${SERVICE_NAME} +short)
+echo "$SWARM_SERVICE_IPs"
 MY_IP=$(dig $(hostname) +short)
 
 OTHER_NODES=""
@@ -22,6 +23,7 @@ do
     OTHER_NODES="${OTHER_NODES}${NODE_IP},"
 done
 
+echo $OTHER_NODES
 # Add elasticsearch as command if needed
 if [ "${1:0:1}" = '-' ]; then
     set -- -Dnetwork.publish_host=${MY_IP} "$@"
