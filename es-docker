@@ -39,10 +39,13 @@ done
 
 if [ -n "${MY_IP}" ];then
     echo "Setting network.publish_host=${SERVICE_NAME}"
-    es_opt="-Enetwork.publish_host=${SERVICE_NAME}"
+    es_opt="-Enetwork.publish_host=${MY_IP}"
     es_opts+=" ${es_opt}"
     echo "Setting network.host=${MY_IP}"
     es_opt="-Enetwork.host=${MY_IP}"
+    es_opts+=" ${es_opt}"
+    echo "Setting network.bind_host=${MY_IP}"
+    es_opt="-Enetwork.bind_host=${MY_IP}"
     es_opts+=" ${es_opt}"
 fi
 if [ -n "$OTHER_NODES" ];then
