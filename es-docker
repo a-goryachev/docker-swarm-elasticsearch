@@ -10,18 +10,20 @@
 
 es_opts=''
 
-echo "service name: ${SERVICE_NAME}"
 if [ -z ${SERVICE_NAME} ];then
-    echo "Environment variable SERVICE_NAME not set. You MUST set it to name of docker swarm service"
+    >&2 echo "Environment variable SERVICE_NAME not set. You MUST set it to name of docker swarm service"
     exit 3
 fi
 
+# Delay to let hostname to be published to swarm DNS service
 sleep 5
+
 echo "Discovering other nodes in cluster..."
 # Docker swarm's DNS resolves special hostname "tasks.<service_name" to IP addresses of all containers inside overlay network
 SWARM_SERVICE_IPs=$(dig tasks.${SERVICE_NAME} +short)
-echo "dig exit code: $?"
-echo "nodes of service ${SERVICE_NAME}: $SWARM_SERVICE_IPs"
+echo "Nodes of service ${SERVICE_NAME}:"
+echo "$SWARM_SERVICE_IPs"
+
 HOSTNAME=$(hostname)
 MY_IP=$(dig ${HOSTNAME} +short)
 echo "My IP: ${MY_IP}"
@@ -30,11 +32,9 @@ OTHER_NODES=""
 
 for NODE_IP in $SWARM_SERVICE_IPs
 do
-    echo "Checking node IP ${NODE_IP}"
     if [ "${NODE_IP}" == "${MY_IP}" ];then
         continue;
     fi
-    echo "Found cluster node: ${NODE_IP}"
     OTHER_NODES="${OTHER_NODES}${NODE_IP},"
 done
 
@@ -50,14 +50,16 @@ if [ -n "${MY_IP}" ];then
     es_opt="-Enetwork.bind_host=${MY_IP}"
     es_opts+=" ${es_opt}"
 fi
+
 if [ -n "$OTHER_NODES" ];then
     echo "Setting discovery.zen.ping.unicast.hosts=${OTHER_NODES%,}"
     es_opt="-Ediscovery.zen.ping.unicast.hosts=${OTHER_NODES%,}"
     es_opts+=" ${es_opt}"
 else
-    echo "There is no another nodes in cluster. I am a first one!"
+    echo "There is no another nodes in cluster. I am alone!"
 fi
 
+#Configuring elasticsearch using environment variables
 while IFS='=' read -r envvar_key envvar_value
 do
     # Elasticsearch env vars need to have at least two dot separated lowercase words, e.g. `cluster.name`
