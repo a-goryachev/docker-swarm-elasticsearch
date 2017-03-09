@@ -21,7 +21,7 @@ echo "Discovering other nodes in cluster..."
 SWARM_SERVICE_IPs=$(dig tasks.${SERVICE_NAME} +short)
 echo "dig exit code: $?"
 echo "nodes of service ${SERVICE_NAME}: $SWARM_SERVICE_IPs"
-MY_IP="$(dig $(hostname) +short)"
+MY_IP=$(dig $(hostname) +short)
 echo "My IP: ${MY_IP}"
 
 OTHER_NODES=""
