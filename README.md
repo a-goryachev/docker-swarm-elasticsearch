@@ -23,3 +23,7 @@ docker service create --name elasticsearch --network=elastic_cluster \
   --env SERVICE_NAME=elasticsearch \
   agoryachev/docker-swarm-elasticsearch:5.2.2
 ```
+
+Since elasticsearch requires vm.max_map_count to be at least 262144 but docker service create does not support sysctl management you have to set 
+vm.max_map_count on all your nodes to proper value BEFORE starting service.
+On Linux Ubuntu: `sysctl -w "vm.max_map_count=262144"`. Or `echo "vm.max_map_count=262144" >> /etc/sysctl.conf` to set it permanently.
