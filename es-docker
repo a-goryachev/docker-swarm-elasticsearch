@@ -81,5 +81,5 @@ done < <(env)
 # that cgroup statistics are available for the container this process
 # will run in.
 export ES_JAVA_OPTS="-Des.cgroups.hierarchy.override=/ $ES_JAVA_OPTS"
-
+echo "Launching command: bin/elasticsearch ${es_opts}"
 exec bin/elasticsearch ${es_opts}
