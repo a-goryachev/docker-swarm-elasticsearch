@@ -1,6 +1,8 @@
-#Docker Swarm support for elasticsearch
+Docker Swarm support for elasticsearch
+--------------------------------------
 
-##Automatically configures elasticsearch to connect other nodes inside docker swarm cluster.
+Automatically configures elasticsearch to connect other nodes inside docker swarm cluster.
+==========================================================================================
 
 Affects elasticsearch parameters:
 
@@ -13,8 +15,11 @@ In order to run docker swarm service from this image it is REQUIRED to set envir
 Example:
 
 ```
-docker network create --driver overlay --subnet 10.0.10.0/24 --opt encrypted elastic_cluster
-docker service create --name elasticsearch --network=elastic_cluster --replicas 3 \
-    --env SERVICE_NAME=elasticsearch \
-    agoryachev/docker-swarm-elasticsearch:5.2.2
+docker network create --driver overlay --subnet 10.0.10.0/24 \
+  --opt encrypted elastic_cluster
+
+docker service create --name elasticsearch --network=elastic_cluster \
+  --replicas 3 \
+  --env SERVICE_NAME=elasticsearch \
+  agoryachev/docker-swarm-elasticsearch:5.2.2
 ```
