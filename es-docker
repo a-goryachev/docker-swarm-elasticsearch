@@ -16,12 +16,14 @@ if [ -z ${SERVICE_NAME} ];then
     exit 3
 fi
 
+sleep 5
 echo "Discovering other nodes in cluster..."
 # Docker swarm's DNS resolves special hostname "tasks.<service_name" to IP addresses of all containers inside overlay network
 SWARM_SERVICE_IPs=$(dig tasks.${SERVICE_NAME} +short)
 echo "dig exit code: $?"
 echo "nodes of service ${SERVICE_NAME}: $SWARM_SERVICE_IPs"
-MY_IP=$(dig $(hostname) +short)
+HOSTNAME=$(hostname)
+MY_IP=$(dig ${HOSTNAME} +short)
 echo "My IP: ${MY_IP}"
 
 OTHER_NODES=""
@@ -38,7 +40,7 @@ done
 
 
 if [ -n "${MY_IP}" ];then
-    echo "Setting network.publish_host=${SERVICE_NAME}"
+    echo "Setting network.publish_host=${MY_IP}"
     es_opt="-Enetwork.publish_host=${MY_IP}"
     es_opts+=" ${es_opt}"
     echo "Setting network.host=${MY_IP}"
