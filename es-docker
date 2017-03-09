@@ -21,22 +21,23 @@ echo "Discovering other nodes in cluster..."
 SWARM_SERVICE_IPs=$(dig tasks.${SERVICE_NAME} +short)
 echo "dig exit code: $?"
 echo "nodes of service ${SERVICE_NAME}: $SWARM_SERVICE_IPs"
-MY_IP=$(dig $(hostname) +short)
+MY_IP="$(dig $(hostname) +short)"
 echo "My IP: ${MY_IP}"
 
 OTHER_NODES=""
 
 for NODE_IP in $SWARM_SERVICE_IPs
 do
+    echo "Checking node IP ${NODE_IP}"
     if [ "${NODE_IP}" == "${MY_IP}" ];then
         continue;
     fi
-    echo "${NODE_IP}"
+    echo "Found cluster node: ${NODE_IP}"
     OTHER_NODES="${OTHER_NODES}${NODE_IP},"
 done
 
 
-if ! [ -z ${MY_IP} ];then
+if [ -n "${MY_IP}" ];then
     echo "Setting network.publish_host=${SERVICE_NAME}"
     es_opt="-Enetwork.publish_host=${SERVICE_NAME}"
     es_opts+=" ${es_opt}"
@@ -44,10 +45,12 @@ if ! [ -z ${MY_IP} ];then
     es_opt="-Enetwork.host=${MY_IP}"
     es_opts+=" ${es_opt}"
 fi
-if ! [ -z $OTHER_NODES ];then
+if [ -n "$OTHER_NODES" ];then
     echo "Setting discovery.zen.ping.unicast.hosts=${OTHER_NODES%,}"
     es_opt="-Ediscovery.zen.ping.unicast.hosts=${OTHER_NODES%,}"
     es_opts+=" ${es_opt}"
+else
+    echo "There is no another nodes in cluster. I am a first one!"
 fi
 
 while IFS='=' read -r envvar_key envvar_value
