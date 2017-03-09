@@ -1,8 +1,8 @@
 Docker Swarm support for elasticsearch
---------------------------------------
+======================================
 
 Automatically configures elasticsearch to connect other nodes inside docker swarm cluster.
-==========================================================================================
+------------------------------------------------------------------------------------------
 
 Affects elasticsearch parameters:
 
