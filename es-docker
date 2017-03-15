@@ -43,11 +43,11 @@ if [ -n "${MY_IP}" ];then
     echo "Setting network.publish_host=${MY_IP}"
     es_opt="-Enetwork.publish_host=${MY_IP}"
     es_opts+=" ${es_opt}"
-    echo "Setting network.host=${MY_IP}"
-    es_opt="-Enetwork.host=${MY_IP}"
+    echo "Setting network.host=0.0.0.0"
+    es_opt="-Enetwork.host=0.0.0.0"
     es_opts+=" ${es_opt}"
-    echo "Setting network.bind_host=${MY_IP}"
-    es_opt="-Enetwork.bind_host=${MY_IP}"
+    echo "Setting network.bind_host=0.0.0.0"
+    es_opt="-Enetwork.bind_host=0.0.0.0"
     es_opts+=" ${es_opt}"
 fi
 
