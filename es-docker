@@ -8,7 +8,7 @@
 #
 # see https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html#_setting_default_settings
 
-es_opts=''
+declare -a es_opts
 
 if [ -z ${SERVICE_NAME} ];then
     >&2 echo "Environment variable SERVICE_NAME not set. You MUST set it to name of docker swarm service"
@@ -20,24 +20,20 @@ sleep 15
 
 echo "Discovering other nodes in cluster..."
 # Docker swarm's DNS resolves special hostname "tasks.<service_name" to IP addresses of all containers inside overlay network
-SWARM_SERVICE_IPs=$(dig tasks.${SERVICE_NAME} +short)
-echo "Nodes of service ${SERVICE_NAME}:"
-echo "$SWARM_SERVICE_IPs"
 
 HOSTNAME=$(hostname)
-MY_IP=$(dig ${HOSTNAME} +short)
+MY_IP=$(python -c 'import socket;print socket.gethostbyname(socket.gethostname())')
 echo "My IP: ${MY_IP}"
+export MY_IP
 
-OTHER_NODES=""
-
-for NODE_IP in $SWARM_SERVICE_IPs
-do
-    if [ "${NODE_IP}" == "${MY_IP}" ];then
-        continue;
-    fi
-    OTHER_NODES="${OTHER_NODES}${NODE_IP},"
-done
-
+OTHER_NODES=$(python -c '
+import os,socket;
+es_nodes=socket.gethostbyname_ex("tasks.elasticsearch")[2]
+for i in range(len(es_nodes)):
+  if es_nodes[i] == os.environ["MY_IP"]:
+    del es_nodes[i];
+    break;
+print ",".join(es_nodes)')
 
 if [ -n "${MY_IP}" ];then
     echo "Setting network.publish_host=${MY_IP}"
@@ -56,7 +52,7 @@ if [ -n "$OTHER_NODES" ];then
     es_opt="-Ediscovery.zen.ping.unicast.hosts=${OTHER_NODES%,}"
     es_opts+=" ${es_opt}"
 else
-    echo "There is no another nodes in cluster. I am alone!"
+    echo "Dynamic node discovery failed. Falling back to default."
 fi
 
 #Configuring elasticsearch using environment variables
