@@ -3,7 +3,7 @@ version: '3.2'
 services:
   # recall to sudo sysctl -w vm.max_map_count=262144 on swarm nodes
   elasticsearch:
-    image: martel/docker-swarm-elasticsearch:5.4.0
+    image: agoryachev/docker-swarm-elasticsearch:5.4.0
     ports:
       - "9200:9200"
       - "9300:9300"
